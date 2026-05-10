@@ -110,6 +110,11 @@
       color: var(--text);
     }
 
+    button.clear {
+      flex: 0 0 auto;
+      padding-inline: 14px;
+    }
+
     .embers {
       margin-top: 16px;
       font-size: 0.85rem;
@@ -150,6 +155,7 @@
     <div class="buttons">
       <button id="smellButton">Smell Test</button>
       <button class="secondary" id="keepButton">Keep Ember</button>
+      <button class="secondary clear" id="clearButton">Clear Hoard</button>
     </div>
 
     <section class="embers">
@@ -162,6 +168,8 @@
     const speech = document.getElementById("speech");
     const input = document.getElementById("input");
     const emberList = document.getElementById("emberList");
+    const storageKey = "ember.hoard";
+    let hoardedEmbers = [];
 
     const passiveLines = [
       "*Warm. Keep the original shape.*",
@@ -183,6 +191,37 @@
 
     function say(line) {
       speech.textContent = line;
+    }
+
+    function saveHoard() {
+      localStorage.setItem(storageKey, JSON.stringify(hoardedEmbers));
+    }
+
+    function renderEmber(text) {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = text.length > 34 ? text.slice(0, 34) + "…" : text;
+      emberList.append(chip);
+    }
+
+    function renderHoard() {
+      emberList.textContent = "";
+      hoardedEmbers.forEach(renderEmber);
+    }
+
+    function loadHoard() {
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return;
+
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          hoardedEmbers = parsed.filter(item => typeof item === "string");
+          renderHoard();
+        }
+      } catch {
+        hoardedEmbers = [];
+      }
     }
 
     function smellTest() {
@@ -217,19 +256,27 @@
         return;
       }
 
-      const chip = document.createElement("span");
-      chip.className = "chip";
-      chip.textContent = text.length > 34 ? text.slice(0, 34) + "…" : text;
-      emberList.prepend(chip);
+      hoardedEmbers.unshift(text);
+      saveHoard();
+      renderHoard();
       input.value = "";
       say("*Kept. Small flame added to the hoard.*");
     }
 
+    function clearHoard() {
+      hoardedEmbers = [];
+      localStorage.removeItem(storageKey);
+      renderHoard();
+      say("*Hoard cleared. Suspiciously tidy.*");
+    }
+
     document.getElementById("smellButton").addEventListener("click", smellTest);
     document.getElementById("keepButton").addEventListener("click", keepEmber);
+    document.getElementById("clearButton").addEventListener("click", clearHoard);
     document.getElementById("dragon").addEventListener("click", () => {
       say(passiveLines[Math.floor(Math.random() * passiveLines.length)]);
     });
+    loadHoard();
   </script>
 </body>
 </html>
