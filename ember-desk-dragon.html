@@ -72,6 +72,7 @@
       background: #171717;
       border: 1px solid rgba(255, 255, 255, 0.08);
       line-height: 1.35;
+      white-space: pre-line;
     }
 
     textarea {
@@ -154,12 +155,14 @@
 
     <div class="buttons">
       <button id="smellButton">Smell Test</button>
+      <button class="secondary" id="rinButton">Rin Check</button>
       <button class="secondary" id="keepButton">Keep Ember</button>
       <button class="secondary clear" id="clearButton">Clear Hoard</button>
     </div>
 
     <section class="embers">
       <div>Hoarded embers:</div>
+      <div>Runs locally in your browser. Nothing is sent anywhere.</div>
       <div class="ember-list" id="emberList"></div>
     </section>
   </main>
@@ -189,12 +192,71 @@
       "structure", "evidence", "audit", "alignment", "coherence"
     ];
 
+    const constraintWords = [
+      "constraint", "must", "cannot", "without", "unless", "limit",
+      "avoid", "only", "require", "preserve"
+    ];
+
     function say(line) {
       speech.textContent = line;
     }
 
+    function getInputText() {
+      return input.value.trim();
+    }
+
+    function analyzeText(text) {
+      const lower = text.toLowerCase();
+      const proxyHits = proxyWords.filter(word => lower.includes(word));
+      const integrityHits = integrityWords.filter(word => lower.includes(word));
+
+      return {
+        proxyHits,
+        integrityHits
+      };
+    }
+
+    function rinCheck() {
+      const text = getInputText();
+
+      if (!text) {
+        say("Objective: missing. Tiny blank parchment.\nProxy risk: unknown.\nConstraint risk: high.\nMinimal repair: write one plain objective first.");
+        return;
+      }
+
+      const lower = text.toLowerCase();
+      const { proxyHits, integrityHits } = analyzeText(text);
+      const constraintHits = constraintWords.filter(word => lower.includes(word));
+      const hasObjectiveShape = integrityHits.length > 0 || lower.includes("to ") || lower.includes("so that") || lower.includes("because");
+
+      const objective = hasObjectiveShape
+        ? "present enough to inspect."
+        : "blurry. Ember wants the real target named.";
+      const proxyRisk = proxyHits.length >= 2 && integrityHits.length === 0
+        ? `high (${proxyHits.join(", ")}).`
+        : proxyHits.length > 0
+          ? `watch (${proxyHits.join(", ")}).`
+          : "low.";
+      const constraintRisk = constraintHits.length > 0
+        ? "low. A boundary is named."
+        : "medium. Add one hard edge.";
+      const minimalRepair = proxyHits.length >= 2 && !hasObjectiveShape
+        ? "name the objective before the shiny measure."
+        : constraintHits.length === 0
+          ? "add one constraint Ember can bite."
+          : "keep it small and test the structure.";
+
+      say(`Objective: ${objective}\nProxy risk: ${proxyRisk}\nConstraint risk: ${constraintRisk}\nMinimal repair: ${minimalRepair}`);
+    }
+
     function saveHoard() {
-      localStorage.setItem(storageKey, JSON.stringify(hoardedEmbers));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(hoardedEmbers));
+        return true;
+      } catch {
+        say("*Tiny warning: the hoard is warm here, but this browser would not store it.*");
+        return false;
+      }
     }
 
     function renderEmber(text) {
@@ -207,6 +269,13 @@
     function renderHoard() {
       emberList.textContent = "";
       hoardedEmbers.forEach(renderEmber);
+    }
+
+    function setHoard(nextHoard) {
+      hoardedEmbers = nextHoard;
+      const saved = saveHoard();
+      renderHoard();
+      return saved;
     }
 
     function loadHoard() {
@@ -225,16 +294,14 @@
     }
 
     function smellTest() {
-      const text = input.value.trim();
-      const lower = text.toLowerCase();
+      const text = getInputText();
 
       if (!text) {
         say("*You brought me air. I cannot audit air, Josh.*");
         return;
       }
 
-      const proxyHits = proxyWords.filter(word => lower.includes(word));
-      const integrityHits = integrityWords.filter(word => lower.includes(word));
+      const { proxyHits, integrityHits } = analyzeText(text);
 
       if (proxyHits.length >= 2 && integrityHits.length === 0) {
         say("*This smells like proxy drift. Shiny, not necessarily correct.*");
@@ -250,27 +317,27 @@
     }
 
     function keepEmber() {
-      const text = input.value.trim();
+      const text = getInputText();
       if (!text) {
         say("*No ember to hoard. Tragic.*");
         return;
       }
 
-      hoardedEmbers.unshift(text);
-      saveHoard();
-      renderHoard();
+      const saved = setHoard([text, ...hoardedEmbers]);
       input.value = "";
-      say("*Kept. Small flame added to the hoard.*");
+      if (saved) {
+        say("*Kept. Small flame added to the hoard.*");
+      }
     }
 
     function clearHoard() {
-      hoardedEmbers = [];
+      setHoard([]);
       localStorage.removeItem(storageKey);
-      renderHoard();
       say("*Hoard cleared. Suspiciously tidy.*");
     }
 
     document.getElementById("smellButton").addEventListener("click", smellTest);
+    document.getElementById("rinButton").addEventListener("click", rinCheck);
     document.getElementById("keepButton").addEventListener("click", keepEmber);
     document.getElementById("clearButton").addEventListener("click", clearHoard);
     document.getElementById("dragon").addEventListener("click", () => {
