@@ -160,6 +160,7 @@
 
     <section class="embers">
       <div>Hoarded embers:</div>
+      <div>Stored locally in this browser only.</div>
       <div class="ember-list" id="emberList"></div>
     </section>
   </main>
@@ -193,8 +194,29 @@
       speech.textContent = line;
     }
 
+    function getInputText() {
+      return input.value.trim();
+    }
+
+    function analyzeText(text) {
+      const lower = text.toLowerCase();
+      const proxyHits = proxyWords.filter(word => lower.includes(word));
+      const integrityHits = integrityWords.filter(word => lower.includes(word));
+
+      return {
+        proxyHits,
+        integrityHits
+      };
+    }
+
     function saveHoard() {
-      localStorage.setItem(storageKey, JSON.stringify(hoardedEmbers));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(hoardedEmbers));
+        return true;
+      } catch {
+        say("*Tiny warning: the hoard is warm here, but this browser would not store it.*");
+        return false;
+      }
     }
 
     function renderEmber(text) {
@@ -207,6 +229,13 @@
     function renderHoard() {
       emberList.textContent = "";
       hoardedEmbers.forEach(renderEmber);
+    }
+
+    function setHoard(nextHoard) {
+      hoardedEmbers = nextHoard;
+      const saved = saveHoard();
+      renderHoard();
+      return saved;
     }
 
     function loadHoard() {
@@ -225,16 +254,14 @@
     }
 
     function smellTest() {
-      const text = input.value.trim();
-      const lower = text.toLowerCase();
+      const text = getInputText();
 
       if (!text) {
         say("*You brought me air. I cannot audit air, Josh.*");
         return;
       }
 
-      const proxyHits = proxyWords.filter(word => lower.includes(word));
-      const integrityHits = integrityWords.filter(word => lower.includes(word));
+      const { proxyHits, integrityHits } = analyzeText(text);
 
       if (proxyHits.length >= 2 && integrityHits.length === 0) {
         say("*This smells like proxy drift. Shiny, not necessarily correct.*");
@@ -250,23 +277,22 @@
     }
 
     function keepEmber() {
-      const text = input.value.trim();
+      const text = getInputText();
       if (!text) {
         say("*No ember to hoard. Tragic.*");
         return;
       }
 
-      hoardedEmbers.unshift(text);
-      saveHoard();
-      renderHoard();
+      const saved = setHoard([text, ...hoardedEmbers]);
       input.value = "";
-      say("*Kept. Small flame added to the hoard.*");
+      if (saved) {
+        say("*Kept. Small flame added to the hoard.*");
+      }
     }
 
     function clearHoard() {
-      hoardedEmbers = [];
+      setHoard([]);
       localStorage.removeItem(storageKey);
-      renderHoard();
       say("*Hoard cleared. Suspiciously tidy.*");
     }
 
