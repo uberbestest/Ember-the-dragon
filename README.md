@@ -1,47 +1,74 @@
-# Ember
+# Cass-V Lite
 
-Ember is a small local "smell test" tool for catching objective drift and wrong-thing optimization early.
+Cass-V Lite is a small structural audit tool for checking whether a stated objective survives optimization pressure.
 
-Drop in a thought, plan, title, prompt, or suspicious objective. Ember gives a quick read on whether a proxy, metric, or shiny optimization target may be replacing the original goal.
+It is meant for quick, grounded evaluation of systems, plans, prompts, and governance designs. The tool looks for cases where a proxy, metric, reward signal, or vague target can replace the original objective.
 
-No accounts. No tracking. No build step.
+It does not evaluate ethics, quality, persuasiveness, or policy merit. It checks structural alignment only.
 
-## Tools
+## What It Reports
 
-- `ember-desk-dragon.html` is the standalone browser tool. It runs locally and stores hoarded notes in `localStorage`.
-- `cass_v_lite.py` is a minimal command-line Cass-V structural audit helper.
-- `test_cass_v_lite.py` contains the Python unit tests for the Cass-V helper.
+Cass-V Lite returns a fixed text report with these sections:
 
-## Run Ember
+- `Objective`
+- `Constraints`
+- `Proxies`
+- `Failure Surfaces`
+- `Invariant Check`
+- `Minimal Repair`
+- `Final Judgment`
+- `Confidence`
 
-Open `ember-desk-dragon.html` in a browser.
+The output structure is part of the project contract and is covered by tests.
 
-The page is self-contained HTML, CSS, and JavaScript. Nothing is sent anywhere.
+## Run
 
-## Run Cass-V Lite
+Pass text as an argument:
 
 ```powershell
 python cass_v_lite.py "Objective: Improve student learning outcomes. Measure success by average test score."
 ```
 
-or:
+Or pipe text through standard input:
 
 ```powershell
 "Objective: Keep support accurate. Optimize for ticket throughput." | python cass_v_lite.py
 ```
 
-## Run Tests
+## Examples
+
+Example inputs and outputs are in `examples/`:
+
+- `examples/aligned_system_input.txt`
+- `examples/aligned_system_output.txt`
+- `examples/proxy_drift_input.txt`
+- `examples/proxy_drift_output.txt`
+- `examples/ambiguous_objective_input.txt`
+- `examples/ambiguous_objective_output.txt`
+
+These are plain text snapshots for first-time readers and for manual comparison. The automated tests remain in `test_cass_v_lite.py`.
+
+## Tests
 
 ```powershell
 python -m unittest
 ```
 
+The tests cover aligned systems, proxy-heavy systems, ambiguous objectives, over-optimized systems, and the exact ordering of output sections.
+
+## Files
+
+- `cass_v_lite.py` contains the audit logic and command-line entry point.
+- `test_cass_v_lite.py` contains the unit tests.
+- `examples/` contains small input/output samples.
+- `ember-desk-dragon.html` is an adjacent local smell-test interface in the same workspace, not a dependency of Cass-V Lite.
+
 ## Scope
 
-Ember is a lightweight first pass. It can point out likely drift, proxy substitution, missing constraints, or unclear objectives. It is not a full audit system and does not judge ethics, quality, or persuasiveness.
+Cass-V Lite is intentionally narrow. It does not include multi-agent reasoning, recursive refinement, adversarial testing, or broader framework expansion.
 
-Cass-V Lite gives a stricter structural read on whether the stated objective survives optimization pressure.
+Use it as a first structural pass: identify the objective, locate constraints, surface proxy pressure, and return the smallest repair that keeps the original objective primary.
 
 ## Status
 
-Local working prototype.
+Local working prototype with unit tests.
