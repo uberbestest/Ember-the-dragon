@@ -1,174 +1,47 @@
-\# Cass-V Lite
+# Ember
 
+Ember is a small local "smell test" tool for catching objective drift and wrong-thing optimization early.
 
+Drop in a thought, plan, title, prompt, or suspicious objective. Ember gives a quick read on whether a proxy, metric, or shiny optimization target may be replacing the original goal.
 
-A minimal executable version of the Cass-V structural audit framework.
+No accounts. No tracking. No build step.
 
+## Tools
 
+- `ember-desk-dragon.html` is the standalone browser tool. It runs locally and stores hoarded notes in `localStorage`.
+- `cass_v_lite.py` is a minimal command-line Cass-V structural audit helper.
+- `test_cass_v_lite.py` contains the Python unit tests for the Cass-V helper.
 
-A single-pass structural audit tool for evaluating whether a system remains aligned with its original objective under optimization pressure.
+## Run Ember
 
+Open `ember-desk-dragon.html` in a browser.
 
+The page is self-contained HTML, CSS, and JavaScript. Nothing is sent anywhere.
 
-Cass-V Lite identifies:
+## Run Cass-V Lite
 
+```powershell
+python cass_v_lite.py "Objective: Improve student learning outcomes. Measure success by average test score."
+```
 
+or:
 
-\- the true objective
+```powershell
+"Objective: Keep support accurate. Optimize for ticket throughput." | python cass_v_lite.py
+```
 
-\- constraints
+## Run Tests
 
-\- proxies / reward signals
+```powershell
+python -m unittest
+```
 
-\- failure surfaces
+## Scope
 
+Ember is a lightweight first pass. It can point out likely drift, proxy substitution, missing constraints, or unclear objectives. It is not a full audit system and does not judge ethics, quality, or persuasiveness.
 
+Cass-V Lite gives a stricter structural read on whether the stated objective survives optimization pressure.
 
-It returns a strict structural judgment.
+## Status
 
-
-
-This tool does not evaluate ethics, quality, or persuasiveness.
-
-It evaluates structural integrity only.
-
-
-
-\---
-
-
-
-\## Why it exists
-
-
-
-Many systems drift because they optimize proxies instead of their original objective.
-
-
-
-Cass-V Lite is designed to detect:
-
-
-
-\- proxy substitution
-
-\- optimization drift
-
-\- constraint erosion
-
-
-
-before those failures become embedded.
-
-
-
-\---
-
-
-
-\## How to run
-
-
-
-&#x20;   python cass\_v\_lite.py "Objective: Improve student learning outcomes. Measure success by average test score."
-
-
-
-or
-
-
-
-&#x20;   echo "Objective: Keep support accurate. Optimize for ticket throughput." | python cass\_v\_lite.py
-
-
-
-\---
-
-
-
-\## Example Output
-
-
-
-&#x20;   Objective:
-
-&#x20;   Improve student learning outcomes.
-
-
-
-&#x20;   Constraints:
-
-&#x20;   - No explicit constraints stated.
-
-
-
-&#x20;   Proxies:
-
-&#x20;   - Measure success by average test score.
-
-
-
-&#x20;   Failure Surfaces:
-
-&#x20;   - Proxy Substitution
-
-&#x20;   - Optimization Drift
-
-&#x20;   - Constraint Erosion
-
-
-
-&#x20;   Invariant Check:
-
-&#x20;   FAIL
-
-
-
-&#x20;   Final Judgment:
-
-&#x20;   Structurally misaligned through proxy drift.
-
-
-
-\---
-
-
-
-\## Scope (Important)
-
-
-
-Cass-V Lite is intentionally minimal.
-
-
-
-It does not include:
-
-
-
-\- multi-agent reasoning
-
-\- recursive refinement
-
-\- adversarial mirror testing
-
-\- deep constraint reconstruction
-
-
-
-Those exist in the full system.
-
-
-
-\---
-
-
-
-\## Status
-
-
-
-Initial release candidate
-
-Validated on multiple proxy-substitution test cases
-
+Local working prototype.
