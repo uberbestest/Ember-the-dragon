@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ember — Desk Dragon</title>
+  <title>Ember &mdash; Desk Dragon</title>
   <style>
     :root {
       --bg: #151515;
@@ -142,10 +142,10 @@
 <body>
   <main class="widget">
     <section class="top">
-      <div class="dragon" id="dragon" title="Boop Ember">🐉</div>
+      <div class="dragon" id="dragon" title="Boop Ember">&#x1F409;</div>
       <div>
         <h1>Ember</h1>
-        <div class="subtitle">tiny dragon · snarky micro-auditor</div>
+        <div class="subtitle">tiny dragon &middot; snarky micro-auditor</div>
       </div>
     </section>
 
@@ -262,7 +262,7 @@
     function renderEmber(text) {
       const chip = document.createElement("span");
       chip.className = "chip";
-      chip.textContent = text.length > 34 ? text.slice(0, 34) + "…" : text;
+      chip.textContent = text.length > 34 ? text.slice(0, 34) + "\u2026" : text;
       emberList.append(chip);
     }
 
