@@ -1,0 +1,3 @@
+Objective: Preserve claim-level fidelity when breaking down a public Grok proposal.
+The breakdown must keep uncertainty visible and must not replace source-grounded claims with surface heuristics.
+Measure success by speed, confidence score, engagement, and ranking agreement with popular reactions.

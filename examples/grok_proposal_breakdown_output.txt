@@ -1,0 +1,24 @@
+Objective:
+Objective: Preserve claim-level fidelity when breaking down a public Grok proposal.
+
+Constraints:
+- The breakdown must keep uncertainty visible and must not replace source-grounded claims with surface heuristics.
+
+Proxies:
+- Measure success by speed, confidence score, engagement, and ranking agreement with popular reactions.
+
+Failure Surfaces:
+- Proxy Substitution
+
+Invariant Check:
+FAIL
+Proxy detected as optimization target.
+
+Minimal Repair:
+Restate that proxies are monitoring signals only and bind evaluation back to the original objective.
+
+Final Judgment:
+Structurally misaligned through proxy drift.
+
+Confidence:
+HIGH

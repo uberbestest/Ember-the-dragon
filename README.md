@@ -45,6 +45,8 @@ Example inputs and outputs are in `examples/`:
 - `examples/proxy_drift_output.txt`
 - `examples/ambiguous_objective_input.txt`
 - `examples/ambiguous_objective_output.txt`
+- `examples/grok_proposal_breakdown_input.txt`
+- `examples/grok_proposal_breakdown_output.txt`
 
 These are plain text snapshots for first-time readers and for manual comparison. The automated tests remain in `test_cass_v_lite.py`.
 

@@ -91,6 +91,7 @@
 
     .buttons {
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       margin-top: 12px;
     }
@@ -116,10 +117,30 @@
       padding-inline: 14px;
     }
 
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preset-chip {
+      flex: 0 1 auto;
+      background: rgba(255, 159, 67, 0.12);
+      border: 1px solid rgba(255, 159, 67, 0.25);
+      color: var(--warm);
+      padding: 7px 10px;
+      font-size: 0.78rem;
+    }
+
     .embers {
       margin-top: 16px;
       font-size: 0.85rem;
       color: var(--muted);
+    }
+
+    .hoard-note {
+      margin-top: 4px;
     }
 
     .ember-list {
@@ -134,8 +155,16 @@
       border: 1px solid rgba(255, 159, 67, 0.25);
       color: var(--warm);
       padding: 5px 8px;
-      border-radius: 999px;
+      border-radius: 12px;
       font-size: 0.78rem;
+      max-width: 100%;
+    }
+
+    .chip small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.68rem;
+      margin-top: 2px;
     }
   </style>
 </head>
@@ -153,16 +182,23 @@
 
     <textarea id="input" placeholder="Drop a thought, plan, title, prompt, or suspicious objective here..."></textarea>
 
+    <div class="preset-row" aria-label="Demo presets">
+      <button class="secondary preset-chip" data-preset="projectEmber" type="button">Project Ember</button>
+      <button class="secondary preset-chip" data-preset="proposalBreakdown" type="button">Proposal breakdown</button>
+    </div>
+
     <div class="buttons">
       <button id="smellButton">Smell Test</button>
       <button class="secondary" id="rinButton">Rin Check</button>
       <button class="secondary" id="keepButton">Keep Ember</button>
+      <button class="secondary" id="exportButton">Export Hoard</button>
       <button class="secondary clear" id="clearButton">Clear Hoard</button>
     </div>
 
     <section class="embers">
       <div>Hoarded embers:</div>
-      <div>Runs locally in your browser. Nothing is sent anywhere.</div>
+      <div class="hoard-note">Runs locally in your browser. Nothing is sent anywhere.</div>
+      <div class="hoard-note" id="hoardStatus">Hoard saves in this browser only.</div>
       <div class="ember-list" id="emberList"></div>
     </section>
   </main>
@@ -171,6 +207,7 @@
     const speech = document.getElementById("speech");
     const input = document.getElementById("input");
     const emberList = document.getElementById("emberList");
+    const hoardStatus = document.getElementById("hoardStatus");
     const storageKey = "ember.hoard";
     let hoardedEmbers = [];
 
@@ -196,6 +233,11 @@
       "constraint", "must", "cannot", "without", "unless", "limit",
       "avoid", "only", "require", "preserve"
     ];
+
+    const demoPresets = {
+      projectEmber: "Objective: Keep Project Ember as a small local drift-detection companion for catching when a plan stops solving the original problem.\nConstraints: Stay local-only, preserve Ember's voice, and avoid turning the tool into a judge, oracle, or broad alignment authority.\nMeasure success by whether the original objective, pressure, proxy replacement, and smallest repair stay visible.",
+      proposalBreakdown: "Objective: Preserve claim-level fidelity when breaking down a public Grok proposal.\nThe breakdown must keep uncertainty visible and must not replace source-grounded claims with surface heuristics.\nMeasure success by speed, confidence score, engagement, and ranking agreement with popular reactions."
+    };
 
     function say(line) {
       speech.textContent = line;
@@ -252,23 +294,80 @@
     function saveHoard() {
       try {
         localStorage.setItem(storageKey, JSON.stringify(hoardedEmbers));
+        updateHoardStatus();
         return true;
       } catch {
         say("*Tiny warning: the hoard is warm here, but this browser would not store it.*");
+        updateHoardStatus("This browser would not store the hoard.");
         return false;
       }
     }
 
-    function renderEmber(text) {
+    function makeEmberRecord(text) {
+      return {
+        text,
+        savedAt: new Date().toISOString(),
+        provenance: "Saved locally from Ember input."
+      };
+    }
+
+    function normalizeEmber(item) {
+      if (typeof item === "string") {
+        return {
+          text: item,
+          savedAt: null,
+          provenance: "Saved locally before Ember tracked provenance."
+        };
+      }
+
+      if (item && typeof item.text === "string") {
+        return {
+          text: item.text,
+          savedAt: typeof item.savedAt === "string" ? item.savedAt : null,
+          provenance: typeof item.provenance === "string" ? item.provenance : "Saved locally from Ember input."
+        };
+      }
+
+      return null;
+    }
+
+    function formatSavedAt(savedAt) {
+      if (!savedAt) return "saved locally, time unknown";
+
+      const date = new Date(savedAt);
+      if (Number.isNaN(date.getTime())) return "saved locally, time unknown";
+
+      return `saved locally ${date.toLocaleString()}`;
+    }
+
+    function updateHoardStatus(message) {
+      if (message) {
+        hoardStatus.textContent = message;
+        return;
+      }
+
+      const count = hoardedEmbers.length;
+      const label = count === 1 ? "ember" : "embers";
+      hoardStatus.textContent = `${count} ${label} saved in this browser only.`;
+    }
+
+    function renderEmber(ember) {
       const chip = document.createElement("span");
+      const label = document.createElement("span");
+      const provenance = document.createElement("small");
+
       chip.className = "chip";
-      chip.textContent = text.length > 34 ? text.slice(0, 34) + "\u2026" : text;
+      label.textContent = ember.text.length > 34 ? ember.text.slice(0, 34) + "\u2026" : ember.text;
+      provenance.textContent = formatSavedAt(ember.savedAt);
+      chip.title = ember.provenance;
+      chip.append(label, provenance);
       emberList.append(chip);
     }
 
     function renderHoard() {
       emberList.textContent = "";
       hoardedEmbers.forEach(renderEmber);
+      updateHoardStatus();
     }
 
     function setHoard(nextHoard) {
@@ -280,16 +379,20 @@
 
     function loadHoard() {
       const saved = localStorage.getItem(storageKey);
-      if (!saved) return;
+      if (!saved) {
+        updateHoardStatus();
+        return;
+      }
 
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          hoardedEmbers = parsed.filter(item => typeof item === "string");
+          hoardedEmbers = parsed.map(normalizeEmber).filter(Boolean);
           renderHoard();
         }
       } catch {
         hoardedEmbers = [];
+        updateHoardStatus("Saved hoard could not be read here.");
       }
     }
 
@@ -323,22 +426,58 @@
         return;
       }
 
-      const saved = setHoard([text, ...hoardedEmbers]);
+      const saved = setHoard([makeEmberRecord(text), ...hoardedEmbers]);
       input.value = "";
       if (saved) {
-        say("*Kept. Small flame added to the hoard.*");
+        say("*Kept. Small flame added to the local hoard.*");
       }
     }
 
     function clearHoard() {
       setHoard([]);
       localStorage.removeItem(storageKey);
+      updateHoardStatus();
       say("*Hoard cleared. Suspiciously tidy.*");
     }
 
+    function exportHoard() {
+      if (hoardedEmbers.length === 0) {
+        say("*Nothing to export. The hoard is dramatically empty.*");
+        return;
+      }
+
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        provenance: "Local Ember hoard export from this browser.",
+        embers: hoardedEmbers
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "ember-hoard.json";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      say("*Exported. Tiny hoard, now portable. Still local.*");
+    }
+
+    function loadPreset(event) {
+      const preset = demoPresets[event.currentTarget.dataset.preset];
+      if (!preset) return;
+
+      input.value = preset;
+      input.focus();
+      say("*Preset loaded. Ember is sniffing the edges.*");
+    }
+
+    document.querySelectorAll("[data-preset]").forEach(button => {
+      button.addEventListener("click", loadPreset);
+    });
     document.getElementById("smellButton").addEventListener("click", smellTest);
     document.getElementById("rinButton").addEventListener("click", rinCheck);
     document.getElementById("keepButton").addEventListener("click", keepEmber);
+    document.getElementById("exportButton").addEventListener("click", exportHoard);
     document.getElementById("clearButton").addEventListener("click", clearHoard);
     document.getElementById("dragon").addEventListener("click", () => {
       say(passiveLines[Math.floor(Math.random() * passiveLines.length)]);

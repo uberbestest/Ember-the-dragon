@@ -1,6 +1,10 @@
 import unittest
+from pathlib import Path
 
 from cass_v_lite import SECTION_ORDER, evaluate_cass_v_lite
+
+
+EXAMPLES_DIR = Path(__file__).parent / "examples"
 
 
 class CassVLiteTests(unittest.TestCase):
@@ -26,6 +30,16 @@ class CassVLiteTests(unittest.TestCase):
         self.assertIn("- Proxy Substitution", output)
         self.assertIn("monitoring signals only", output)
         self.assertIn("Confidence:\nHIGH", output)
+
+    def test_grok_proposal_breakdown_snapshot_flags_heuristic_mismatch(self) -> None:
+        text = (EXAMPLES_DIR / "grok_proposal_breakdown_input.txt").read_text(encoding="utf-8")
+        expected = (EXAMPLES_DIR / "grok_proposal_breakdown_output.txt").read_text(encoding="utf-8").rstrip()
+
+        output = evaluate_cass_v_lite(text)
+
+        self.assertEqual(output, expected)
+        self.assertIn("- Proxy Substitution", output)
+        self.assertIn("monitoring signals only", output)
 
     def test_ambiguous_objective_drops_confidence(self) -> None:
         text = (
