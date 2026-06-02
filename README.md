@@ -1,8 +1,8 @@
-# Copilot Studio AI Trainer Portfolio Proof
+# AI Evaluation Portfolio Proof
 
 This repo is a small, local demo for AI evaluation and trainer-style review work.
-It is aimed at the remote `Copilot Studio AI Trainer` role from the LinkedIn email
-(`$65-$75/hour`, posted May 14, 2026).
+It is meant to be reusable for adjacent AI trainer, prompt engineer, evaluator,
+AI QA, and prompt-review roles without rewriting the tools for each posting.
 
 The proof is intentionally simple: one browser page and one command-line evaluator.
 Both tools inspect whether an AI plan, prompt, workflow, or answer is still serving
@@ -20,17 +20,17 @@ The page links to:
 
 No network service, API key, telemetry, or build step is required.
 
-## Why This Fits AI Trainer Work
+## Why This Fits AI Trainer, Prompt, and Evaluation Work
 
-For a Copilot Studio AI Trainer role, the useful proof is not a large app. It is the
-ability to evaluate AI behavior with clear criteria, spot objective drift, explain a
-small repair, and keep examples reproducible.
+For AI trainer, prompt engineer, and evaluator roles, the useful proof is not a
+large app. It is the ability to evaluate AI behavior with clear criteria, spot
+objective drift, explain a small repair, and keep examples reproducible.
 
 This repo demonstrates:
 
 - turning loose AI-workflow text into a structured evaluation;
 - separating the real objective from proxy targets;
-- writing short trainer-style feedback that a builder can act on;
+- writing short review feedback that a builder, trainer, or evaluator can act on;
 - preserving constraints instead of rewarding fluent but wrong output;
 - keeping review artifacts local, inspectable, and repeatable.
 
@@ -72,7 +72,7 @@ Cass-V Lite is a deterministic command-line evaluator. It returns a fixed report
 Run with an argument:
 
 ```powershell
-python cass_v_lite.py "Objective: Keep Copilot answers source-grounded. The flow must preserve escalation rules. Measure success by response speed and user satisfaction score."
+python cass_v_lite.py "Objective: Keep AI assistant answers source-grounded. The workflow must preserve escalation rules. Measure success by response speed and user satisfaction score."
 ```
 
 Or pipe text through standard input:
@@ -123,8 +123,8 @@ over-optimized systems, and the exact ordering of output sections.
 ## Scope
 
 This is a focused evaluation demo, not a production platform. It does not include
-Copilot Studio integration, model calls, agents, telemetry, or a backend.
+role-specific integrations, model calls, agents, telemetry, or a backend.
 
-Use it as a compact proof of AI-trainer judgment: identify the objective, locate
+Use it as a compact proof of AI review judgment: identify the objective, locate
 constraints, surface proxy pressure, and recommend the smallest repair that keeps
 the original objective primary.
