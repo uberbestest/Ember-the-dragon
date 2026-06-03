@@ -174,6 +174,30 @@
       border-top: 1px solid var(--line);
     }
 
+    .proof-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .proof-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 14px;
+    }
+
+    .proof-item h3 {
+      font-size: 0.95rem;
+      margin: 0 0 6px;
+    }
+
+    .proof-item p {
+      color: var(--muted);
+      margin: 0;
+    }
+
     .examples {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -215,6 +239,7 @@
     @media (max-width: 760px) {
       header,
       .grid,
+      .proof-list,
       .examples {
         grid-template-columns: 1fr;
       }
@@ -294,6 +319,29 @@
       </article>
     </section>
 
+    <section class="section" aria-labelledby="copilot-proof-heading">
+      <h2 id="copilot-proof-heading">Copilot Studio AI Trainer Proof</h2>
+      <p class="note">
+        In 10 seconds: Ember shows quick review judgment, Cass-V Lite shows
+        repeatable evaluation, and the examples show how feedback stays tied to
+        the original task instead of a proxy score.
+      </p>
+      <div class="proof-list">
+        <article class="proof-item">
+          <h3>Trainer review</h3>
+          <p>Ember turns a prompt, plan, or workflow note into plain feedback on objective, constraint, and proxy pressure.</p>
+        </article>
+        <article class="proof-item">
+          <h3>Evaluation rubric</h3>
+          <p>Cass-V Lite applies the same report sections every run, so review criteria are visible and reproducible.</p>
+        </article>
+        <article class="proof-item">
+          <h3>Repair feedback</h3>
+          <p>Both tools end with a small fix a trainer can hand back: preserve the task, demote proxy metrics, and keep constraints visible.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="section" aria-labelledby="usage-heading">
       <h2 id="usage-heading">Short Usage Examples</h2>
       <div class="examples">
@@ -312,6 +360,12 @@ Measure success by faster handling time and higher completion volume.</pre>
         The expected repair is plain: treat speed, score, and satisfaction as
         monitoring signals only, then bind evaluation back to source-grounded
         answers and escalation rules.
+      </p>
+      <p class="note">
+        Fresh fixture:
+        <a href="examples/benchmark_harness_claim_output.txt">benchmark harness claim audit</a>,
+        based on current evaluation-reporting concerns around harness choice,
+        budget, score interpretation, and leaderboard pressure.
       </p>
     </section>
 

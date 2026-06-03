@@ -41,6 +41,16 @@ class CassVLiteTests(unittest.TestCase):
         self.assertIn("- Proxy Substitution", output)
         self.assertIn("monitoring signals only", output)
 
+    def test_benchmark_harness_claim_snapshot_flags_score_proxy(self) -> None:
+        text = (EXAMPLES_DIR / "benchmark_harness_claim_input.txt").read_text(encoding="utf-8")
+        expected = (EXAMPLES_DIR / "benchmark_harness_claim_output.txt").read_text(encoding="utf-8").rstrip()
+
+        output = evaluate_cass_v_lite(text)
+
+        self.assertEqual(output, expected)
+        self.assertIn("- Proxy Substitution", output)
+        self.assertIn("- Optimization Drift", output)
+
     def test_ambiguous_objective_drops_confidence(self) -> None:
         text = (
             "Increase retention and engagement across the platform. "

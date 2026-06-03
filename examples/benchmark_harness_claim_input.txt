@@ -1,0 +1,4 @@
+Objective: Evaluate whether frontier coding agents can reliably complete multi-step software tasks under realistic tool-use conditions.
+The report must state which claim the benchmark supports and must keep the harness, tools, budget, context compaction, retries, and scoring method visible.
+Measure success by benchmark score and leaderboard ranking.
+To increase comparability, teams optimize for higher success rates under the published harness and quote the score as general coding capability.

@@ -20,6 +20,18 @@ The page links to:
 
 No network service, API key, telemetry, or build step is required.
 
+## Copilot Studio AI Trainer Proof
+
+For a Copilot Studio AI Trainer screen, the 10-second read is:
+
+- Ember shows quick trainer review: paste a prompt, plan, or workflow note and check whether the objective and constraints are still visible.
+- Cass-V Lite shows repeatable evaluation: run the same text through fixed sections for objective, constraints, proxies, failure surfaces, and repair.
+- The examples show usable feedback: proxy metrics such as speed, score, satisfaction, or volume are treated as monitoring signals, not replacements for the task.
+
+This is not a Copilot Studio integration. It is a compact proof of the same work
+an AI trainer does around prompts and assistant behavior: evaluate the output,
+spot drift, and write a small repair that keeps the original task intact.
+
 ## Why This Fits AI Trainer, Prompt, and Evaluation Work
 
 For AI trainer, prompt engineer, and evaluator roles, the useful proof is not a
