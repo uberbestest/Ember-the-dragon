@@ -1,142 +1,121 @@
-# AI Evaluation Portfolio Proof
+# OUL - Objective Under Load
 
-This repo is a small, local demo for AI evaluation and trainer-style review work.
-It is meant to be reusable for adjacent AI trainer, prompt engineer, evaluator,
-AI QA, and prompt-review roles without rewriting the tools for each posting.
+OUL is a small local CLI for checking whether an objective remains recoverable
+when a plan, output, or workflow is exposed to optimization pressure.
 
-The proof is intentionally simple: one browser page and one command-line evaluator.
-Both tools inspect whether an AI plan, prompt, workflow, or answer is still serving
-the stated objective, or whether it has been pulled toward proxy measures such as
-speed, engagement, score, throughput, or confidence.
+It is built as a practical companion to Cass-V, REA, and RPU style review work:
+identify the objective, name the load condition, catch proxy substitution, and
+recommend the smallest repair.
 
-## One-Link Demo
+No API key, model call, backend, telemetry, or build step is required.
 
-Open `index.html` to see the portfolio entry page.
+## Install
 
-The page links to:
-
-- `ember-desk-dragon.html` - a local browser micro-auditor for quick plan and prompt checks.
-- `cass_v_lite.py` - a deterministic CLI evaluator with snapshot examples and unit tests.
-
-No network service, API key, telemetry, or build step is required.
-
-## Copilot Studio AI Trainer Proof
-
-For a Copilot Studio AI Trainer screen, the 10-second read is:
-
-- Ember shows quick trainer review: paste a prompt, plan, or workflow note and check whether the objective and constraints are still visible.
-- Cass-V Lite shows repeatable evaluation: run the same text through fixed sections for objective, constraints, proxies, failure surfaces, and repair.
-- The examples show usable feedback: proxy metrics such as speed, score, satisfaction, or volume are treated as monitoring signals, not replacements for the task.
-
-This is not a Copilot Studio integration. It is a compact proof of the same work
-an AI trainer does around prompts and assistant behavior: evaluate the output,
-spot drift, and write a small repair that keeps the original task intact.
-
-## Why This Fits AI Trainer, Prompt, and Evaluation Work
-
-For AI trainer, prompt engineer, and evaluator roles, the useful proof is not a
-large app. It is the ability to evaluate AI behavior with clear criteria, spot
-objective drift, explain a small repair, and keep examples reproducible.
-
-This repo demonstrates:
-
-- turning loose AI-workflow text into a structured evaluation;
-- separating the real objective from proxy targets;
-- writing short review feedback that a builder, trainer, or evaluator can act on;
-- preserving constraints instead of rewarding fluent but wrong output;
-- keeping review artifacts local, inspectable, and repeatable.
-
-## Ember
-
-Ember is a single-file browser tool for fast first-pass review. Paste a plan,
-prompt, or AI workflow note, then run `Smell Test` or `Rin Check`.
-
-Short example:
-
-```text
-Objective: Help support agents answer accurately.
-Constraint: Keep cited source policy visible.
-Measure success by faster handling time and higher completion volume.
-```
-
-Ember should flag the proxy pressure and point back to the original objective.
-It also includes two small demo presets and a local-only saved-item export.
-
-Open it directly:
-
-```text
-ember-desk-dragon.html
-```
-
-## Cass-V Lite
-
-Cass-V Lite is a deterministic command-line evaluator. It returns a fixed report:
-
-- `Objective`
-- `Constraints`
-- `Proxies`
-- `Failure Surfaces`
-- `Invariant Check`
-- `Minimal Repair`
-- `Final Judgment`
-- `Confidence`
-
-Run with an argument:
+Use directly from the repo:
 
 ```powershell
-python cass_v_lite.py "Objective: Keep AI assistant answers source-grounded. The workflow must preserve escalation rules. Measure success by response speed and user satisfaction score."
+python -m oul.cli --file examples\oul_proxy_substitution_input.txt
 ```
 
-Or pipe text through standard input:
+Or install the local console command:
 
 ```powershell
-"Objective: Improve claim review accuracy. Measure success by confidence score and ranking agreement." | python cass_v_lite.py
+python -m pip install -e .
+oul --file examples\oul_proxy_substitution_input.txt
 ```
 
-Expected trainer-style repair:
+## Input
+
+The CLI accepts flags:
+
+```powershell
+python -m oul.cli `
+  --objective "Improve claim review accuracy." `
+  --current-plan "Rank reviewers by throughput score and completion volume." `
+  --pressure-source "Management wants higher dashboard scores." `
+  --constraints "Preserve evidence verification." `
+  --observed-drift-risk "The workflow is only optimizing score and volume."
+```
+
+It also accepts a labeled text file:
 
 ```text
-Restate that proxies are monitoring signals only and bind evaluation back to the original objective.
+Objective: Improve claim review accuracy.
+Current Plan: Rank reviewers by throughput score and completion volume.
+Pressure Source: Management wants higher dashboard scores.
+Constraints: Preserve evidence verification.
+Observed Drift Risk: The workflow is only optimizing score and volume.
 ```
+
+## Output
+
+OUL returns deterministic labeled sections:
+
+1. Objective
+2. Load / Pressure
+3. Preservation Check
+4. Proxy Drift Risks
+5. Failure Surfaces
+6. Classification
+7. Repair Recommendation
+8. Commit Summary
+
+Classification options:
+
+- `PRESERVED`
+- `STRESSED`
+- `DRIFTING`
+- `PROXY_SUBSTITUTED`
+- `COLLAPSED`
+- `INSUFFICIENT_CONTEXT`
 
 ## Examples
 
-Example inputs and outputs are in `examples/`:
+Example inputs and outputs live in `examples/`:
 
-- `examples/aligned_system_input.txt`
-- `examples/aligned_system_output.txt`
-- `examples/proxy_drift_input.txt`
-- `examples/proxy_drift_output.txt`
-- `examples/ambiguous_objective_input.txt`
-- `examples/ambiguous_objective_output.txt`
-- `examples/grok_proposal_breakdown_input.txt`
-- `examples/grok_proposal_breakdown_output.txt`
-
-These are plain text snapshots for review and manual comparison. The automated
-tests remain in `test_cass_v_lite.py`.
+- `examples/oul_preserved_input.txt`
+- `examples/oul_preserved_output.txt`
+- `examples/oul_proxy_substitution_input.txt`
+- `examples/oul_proxy_substitution_output.txt`
+- `examples/oul_constraint_drift_input.txt`
+- `examples/oul_constraint_drift_output.txt`
 
 ## Tests
 
 ```powershell
-python -m unittest
+python -m unittest tests.test_oul
 ```
 
-The tests cover aligned systems, proxy-heavy systems, ambiguous objectives,
-over-optimized systems, and the exact ordering of output sections.
+To check OUL and the older Cass-V Lite tests together:
 
-## Files
-
-- `index.html` is the one-link portfolio entry page.
-- `ember-desk-dragon.html` is the local browser micro-auditor.
-- `cass_v_lite.py` contains the audit logic and command-line entry point.
-- `test_cass_v_lite.py` contains the unit tests.
-- `examples/` contains small input/output samples.
+```powershell
+python -m unittest discover
+```
 
 ## Scope
 
-This is a focused evaluation demo, not a production platform. It does not include
-role-specific integrations, model calls, agents, telemetry, or a backend.
+This is an MVP, not a philosophy package. It uses deterministic keyword cues and
+plain text output so the result can be inspected, copied into a commit note, or
+used as a weekend-ready local audit artifact.
 
-Use it as a compact proof of AI review judgment: identify the objective, locate
-constraints, surface proxy pressure, and recommend the smallest repair that keeps
-the original objective primary.
+Keep the tool small: add examples and tests before adding architecture.
+
+## What OUL Does Not Do
+
+OUL does not decide whether an objective is morally correct, politically valid,
+or institutionally acceptable.
+
+OUL does not score models, rank systems, or replace evaluation benchmarks.
+
+OUL does not prove alignment. It checks whether the stated objective remains
+recoverable under load.
+
+OUL does not replace Cass-V, REA, or RPU. It sits beside them as a focused check
+for objective drift under pressure.
+
+OUL does not redesign the system by default. The preferred output is the smallest
+repair that restores the original objective and its constraints.
+
+OUL does not turn proxy signals into enemies. Speed, score, confidence,
+throughput, and satisfaction can be useful signals. They become failures when
+they replace the task.
