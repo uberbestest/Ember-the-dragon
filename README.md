@@ -54,6 +54,8 @@ It is built as a practical companion to Cass-V, REA, and RPU style review work:
 identify the objective, name the load condition, catch proxy substitution, and
 recommend the smallest repair.
 
+Public note: [Objective Under Load (OUL)](https://johnfarseon.substack.com/p/objective-under-load-oul).
+
 ## Install
 
 Use OUL directly from the repo:
