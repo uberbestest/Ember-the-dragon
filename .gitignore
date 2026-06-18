@@ -11,3 +11,10 @@ desktop.ini
 *.swp
 *.tmp
 sync-test.md
+
+# Node/Vite
+node_modules/
+dist/
+
+# Standalone nested repository
+literacy-app/
