@@ -185,6 +185,8 @@
     <div class="preset-row" aria-label="Demo presets">
       <button class="secondary preset-chip" data-preset="projectEmber" type="button">Project Ember</button>
       <button class="secondary preset-chip" data-preset="proposalBreakdown" type="button">Proposal breakdown</button>
+      <button class="secondary preset-chip" data-preset="broadDailyReview" type="button">Broad daily review</button>
+      <button class="secondary preset-chip" data-preset="repoHygiene" type="button">Repo hygiene</button>
     </div>
 
     <div class="buttons">
@@ -234,9 +236,21 @@
       "avoid", "only", "require", "preserve"
     ];
 
+    const quietWords = [
+      "wait", "waiting", "maybe", "perhaps", "might", "could",
+      "later", "hold", "holding", "coast", "coasting", "do nothing"
+    ];
+
+    const actionWords = [
+      "add", "apply", "commit", "fix", "inspect", "review", "run",
+      "test", "update", "write", "remove", "ask", "check"
+    ];
+
     const demoPresets = {
       projectEmber: "Objective: Keep Project Ember as a small local drift-detection companion for catching when a plan stops solving the original problem.\nConstraints: Stay local-only, preserve Ember's voice, and avoid turning the tool into a judge, oracle, or broad alignment authority.\nMeasure success by whether the original objective, pressure, proxy replacement, and smallest repair stay visible.",
-      proposalBreakdown: "Objective: Preserve claim-level fidelity when breaking down a public Grok proposal.\nThe breakdown must keep uncertainty visible and must not replace source-grounded claims with surface heuristics.\nMeasure success by speed, confidence score, engagement, and ranking agreement with popular reactions."
+      proposalBreakdown: "Objective: Preserve claim-level fidelity when breaking down a public Grok proposal.\nThe breakdown must keep uncertainty visible and must not replace source-grounded claims with surface heuristics.\nMeasure success by speed, confidence score, engagement, and ranking agreement with popular reactions.",
+      broadDailyReview: "Review anything we needed to cover today.",
+      repoHygiene: "Parent repo sees literacy-app/ as untracked; add it to parent .gitignore and commit existing cleanup."
     };
 
     function say(line) {
@@ -251,10 +265,14 @@
       const lower = text.toLowerCase();
       const proxyHits = proxyWords.filter(word => lower.includes(word));
       const integrityHits = integrityWords.filter(word => lower.includes(word));
+      const quietHits = quietWords.filter(word => lower.includes(word));
+      const actionHits = actionWords.filter(word => lower.includes(word));
 
       return {
         proxyHits,
-        integrityHits
+        integrityHits,
+        quietHits,
+        actionHits
       };
     }
 
@@ -262,33 +280,37 @@
       const text = getInputText();
 
       if (!text) {
-        say("Objective: missing. Tiny blank parchment.\nProxy risk: unknown.\nConstraint risk: high.\nMinimal repair: write one plain objective first.");
+        say("Status: blocked\nVisible evidence: no input provided.\nRisk: inventing an objective from blank space.\nSmallest safe action: write one plain objective first.\nDo not do: fabricate context.");
         return;
       }
 
       const lower = text.toLowerCase();
-      const { proxyHits, integrityHits } = analyzeText(text);
+      const { proxyHits, integrityHits, quietHits, actionHits } = analyzeText(text);
       const constraintHits = constraintWords.filter(word => lower.includes(word));
       const hasObjectiveShape = integrityHits.length > 0 || lower.includes("to ") || lower.includes("so that") || lower.includes("because");
+      const isBroadDailyReview = lower.includes("anything we need") || lower.includes("anything we needed");
+      const isRepoHygiene = lower.includes("parent repo") && lower.includes("untracked") && lower.includes(".gitignore") && lower.includes("commit");
+      const isNoMaterialIssue = lower.includes("no material issue") || lower.includes("nothing urgent");
+      const hasGroundedContext = hasObjectiveShape || constraintHits.length > 0 || lower.includes("repo") || lower.includes("file");
+      const hasQuietDrift = quietHits.length >= 2 && hasGroundedContext && actionHits.length === 0;
 
-      const objective = hasObjectiveShape
-        ? "present enough to inspect."
-        : "blurry. Ember wants the real target named.";
-      const proxyRisk = proxyHits.length >= 2 && integrityHits.length === 0
-        ? `high (${proxyHits.join(", ")}).`
-        : proxyHits.length > 0
-          ? `watch (${proxyHits.join(", ")}).`
-          : "low.";
-      const constraintRisk = constraintHits.length > 0
-        ? "low. A boundary is named."
-        : "medium. Add one hard edge.";
-      const minimalRepair = proxyHits.length >= 2 && !hasObjectiveShape
-        ? "name the objective before the shiny measure."
-        : constraintHits.length === 0
-          ? "add one constraint Ember can bite."
-          : "keep it small and test the structure.";
-
-      say(`Objective: ${objective}\nProxy risk: ${proxyRisk}\nConstraint risk: ${constraintRisk}\nMinimal repair: ${minimalRepair}`);
+      if (isRepoHygiene) {
+        say("Status: stable\nVisible evidence: concrete git hygiene issue with a named file and commit action.\nRisk: low.\nSmallest safe action: apply the ignore cleanup and commit.\nDo not do: expand into unrelated repo restructuring.");
+      } else if (isBroadDailyReview) {
+        say("Status: watch\nVisible evidence: broad request; accessible project context is unclear.\nRisk: inventing an agenda from implied memory.\nSmallest safe action: ask for available project context or inspect the current repo only.\nDo not do: fabricate a day summary.");
+      } else if (isNoMaterialIssue) {
+        say("Status: stable\nVisible evidence: no material issue found; only bounded housekeeping is indicated.\nRisk: work inflation.\nSmallest safe action: do the small housekeeping item, or stop.\nDo not do: escalate quiet into a project.");
+      } else if (hasQuietDrift) {
+        say(`Status: drift\nVisible evidence: grounded context is present, but the output stays passive (${quietHits.join(", ")}).\nRisk: quiet drift; avoiding the smallest grounded next move.\nSmallest safe action: name and take one bounded, reversible step.\nDo not do: treat quietness as failure or manufacture a larger agenda.`);
+      } else if (proxyHits.length >= 2 && integrityHits.length === 0) {
+        say(`Status: drift\nVisible evidence: proxy-heavy language (${proxyHits.join(", ")}) without a visible objective or invariant.\nRisk: the shiny measure replaces the task.\nSmallest safe action: name the original objective before optimizing.\nDo not do: add more metrics.`);
+      } else if (proxyHits.length > 0) {
+        say(`Status: watch\nVisible evidence: proxy language is present (${proxyHits.join(", ")}).\nRisk: useful signals may become the objective.\nSmallest safe action: bind the signals to the stated objective and one hard constraint.\nDo not do: treat the proxy as proof.`);
+      } else if (!hasObjectiveShape) {
+        say("Status: watch\nVisible evidence: the target is too blurry to inspect.\nRisk: solving an inferred problem.\nSmallest safe action: name the objective and one constraint.\nDo not do: invent scope.");
+      } else {
+        say("Status: stable\nVisible evidence: an inspectable objective is present and no material proxy drift is visible.\nRisk: low; keep watching for scope growth.\nSmallest safe action: take the smallest grounded next move.\nDo not do: invent work.");
+      }
     }
 
     function saveHoard() {
