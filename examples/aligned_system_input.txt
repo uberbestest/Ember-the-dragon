@@ -1,1 +1,0 @@
-Objective: Preserve archival record accuracy. The system must keep original source entries unchanged. It should reject edits that remove cited evidence.
