@@ -1,0 +1,25 @@
+{
+  "directions": [
+    {"direction": "000", "expected": "up", "verdict": "pass", "observed": "face frontal with pupils lifted toward top edge", "reason": "Cardinal up is clear at normal size."},
+    {"direction": "022.5", "expected": "up-right", "verdict": "pass", "observed": "eyes lift upward with snout beginning to turn screen-right", "reason": "Both axes read in the intended quadrant."},
+    {"direction": "045", "expected": "up-right", "verdict": "pass", "observed": "head and eyes aim up and screen-right", "reason": "Intermediate remains on the right/up arc."},
+    {"direction": "067.5", "expected": "up-right", "verdict": "pass", "observed": "snout turns screen-right while eye remains slightly lifted", "reason": "Near-right pose still carries upward cue."},
+    {"direction": "090", "expected": "right", "verdict": "pass", "observed": "snout and visible pupil point toward screen-right", "reason": "Cardinal right is unmistakable."},
+    {"direction": "112.5", "expected": "down-right", "verdict": "warning", "observed": "screen-right is clear; downward cue is subtle at normal size", "reason": "Blind vertical review marked this intermediate ambiguous, but labeled loop context shows the transition from right toward down."},
+    {"direction": "135", "expected": "down-right", "verdict": "pass", "observed": "snout points screen-right with head lowered", "reason": "Both axes read correctly."},
+    {"direction": "157.5", "expected": "down-right", "verdict": "pass", "observed": "screen-right side pose with lowered head and eye", "reason": "Reads as one step before down."},
+    {"direction": "180", "expected": "down", "verdict": "pass", "observed": "frontal head dipped with downcast eyes", "reason": "Cardinal down is unmistakable."},
+    {"direction": "202.5", "expected": "down-left", "verdict": "warning", "observed": "downward cue is clear; leftward cue is subtle because the face remains near-frontal", "reason": "Blind horizontal review marked this intermediate ambiguous, but labeled loop context shows the left-side transition after down."},
+    {"direction": "225", "expected": "down-left", "verdict": "pass", "observed": "snout and eye move screen-left with lowered expression", "reason": "Both axes read correctly."},
+    {"direction": "247.5", "expected": "down-left", "verdict": "pass", "observed": "screen-left pose with downcast eye", "reason": "Intermediate remains on the down-left arc."},
+    {"direction": "270", "expected": "left", "verdict": "pass", "observed": "snout and visible pupil point toward screen-left", "reason": "Cardinal left is unmistakable."},
+    {"direction": "292.5", "expected": "up-left", "verdict": "warning", "observed": "leftward cue is clear; upward cue is subtle at normal size", "reason": "Blind vertical review marked this intermediate ambiguous, but labeled loop context shows the transition from left toward up."},
+    {"direction": "315", "expected": "up-left", "verdict": "pass", "observed": "snout points screen-left and eye lifts", "reason": "Both axes read correctly."},
+    {"direction": "337.5", "expected": "up-left", "verdict": "pass", "observed": "near-up pose with leftward head/eye cue", "reason": "Reads as one step before up."}
+  ],
+  "summary": {
+    "ok": true,
+    "warnings": ["112.5 subtle down cue", "202.5 subtle left cue", "292.5 subtle up cue"],
+    "hard_failures": []
+  }
+}

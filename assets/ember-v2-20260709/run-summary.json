@@ -1,0 +1,16 @@
+{
+  "direction_sheet": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\look-directions.png",
+  "spritesheet": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\final\\spritesheet-extended.webp",
+  "chroma_despill": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\chroma-despill-extended.json",
+  "review": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\review.json",
+  "contact_sheet": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\contact-sheet-extended.png",
+  "spriteVersionNumber": 2,
+  "continuity": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\look-continuity.json",
+  "validation": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\final\\validation-extended.json",
+  "blind_direction_validation": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\direction-blind-validation.json",
+  "blind_review_resolution": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\blind-review-resolution.json",
+  "package": "C:\\Users\\Uberb\\.codex\\pets\\ember",
+  "direction_semantics": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run\\qa\\direction-semantics.json",
+  "run_dir": "C:\\Users\\Uberb\\OneDrive\\Documents\\Cass-V Lite Rsi Run\\ember-pet-run",
+  "ok": true
+}

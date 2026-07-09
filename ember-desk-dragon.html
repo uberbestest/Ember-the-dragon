@@ -41,7 +41,14 @@
     }
 
     .dragon {
-      font-size: 68px;
+      width: 96px;
+      height: 104px;
+      flex: 0 0 96px;
+      background-image: url("assets/ember-v2-20260709/spritesheet.webp");
+      background-repeat: no-repeat;
+      background-size: 768px 1144px;
+      background-position: calc(var(--frame, 0) * -96px) calc(var(--row, 0) * -104px);
+      image-rendering: auto;
       filter: drop-shadow(0 0 14px rgba(255, 159, 67, 0.35));
       animation: breathe 3.5s ease-in-out infinite;
       cursor: pointer;
@@ -171,7 +178,7 @@
 <body>
   <main class="widget">
     <section class="top">
-      <div class="dragon" id="dragon" title="Boop Ember">&#x1F409;</div>
+      <div class="dragon" id="dragon" title="Boop Ember" aria-label="Boop Ember" role="img"></div>
       <div>
         <h1>Ember</h1>
         <div class="subtitle">tiny dragon &middot; snarky micro-auditor</div>
@@ -208,10 +215,23 @@
   <script>
     const speech = document.getElementById("speech");
     const input = document.getElementById("input");
+    const dragon = document.getElementById("dragon");
     const emberList = document.getElementById("emberList");
     const hoardStatus = document.getElementById("hoardStatus");
     const storageKey = "ember.hoard";
     let hoardedEmbers = [];
+    let dragonFrame = 0;
+    let dragonTimer = null;
+    let dragonResetTimer = null;
+
+    const dragonStates = {
+      idle: { row: 0, frames: 6, rate: 360 },
+      waving: { row: 3, frames: 4, rate: 240 },
+      failed: { row: 5, frames: 8, rate: 260 },
+      waiting: { row: 6, frames: 6, rate: 300 },
+      running: { row: 7, frames: 6, rate: 220 },
+      review: { row: 8, frames: 6, rate: 280 }
+    };
 
     const passiveLines = [
       "*Warm. Keep the original shape.*",
@@ -253,8 +273,27 @@
       repoHygiene: "Parent repo sees literacy-app/ as untracked; add it to parent .gitignore and commit existing cleanup."
     };
 
-    function say(line) {
+    function setDragonState(stateName, resetAfter = 0) {
+      const state = dragonStates[stateName] || dragonStates.idle;
+      clearInterval(dragonTimer);
+      clearTimeout(dragonResetTimer);
+      dragonFrame = 0;
+      dragon.style.setProperty("--row", state.row);
+      dragon.style.setProperty("--frame", dragonFrame);
+
+      dragonTimer = setInterval(() => {
+        dragonFrame = (dragonFrame + 1) % state.frames;
+        dragon.style.setProperty("--frame", dragonFrame);
+      }, state.rate);
+
+      if (resetAfter > 0 && stateName !== "idle") {
+        dragonResetTimer = setTimeout(() => setDragonState("idle"), resetAfter);
+      }
+    }
+
+    function say(line, dragonState = "review") {
       speech.textContent = line;
+      setDragonState(dragonState, 1800);
     }
 
     function getInputText() {
@@ -280,7 +319,7 @@
       const text = getInputText();
 
       if (!text) {
-        say("Status: blocked\nVisible evidence: no input provided.\nRisk: inventing an objective from blank space.\nSmallest safe action: write one plain objective first.\nDo not do: fabricate context.");
+        say("Status: blocked\nVisible evidence: no input provided.\nRisk: inventing an objective from blank space.\nSmallest safe action: write one plain objective first.\nDo not do: fabricate context.", "waiting");
         return;
       }
 
@@ -422,14 +461,14 @@
       const text = getInputText();
 
       if (!text) {
-        say("*You brought me air. I cannot audit air, Josh.*");
+        say("*You brought me air. I cannot audit air, Josh.*", "failed");
         return;
       }
 
       const { proxyHits, integrityHits } = analyzeText(text);
 
       if (proxyHits.length >= 2 && integrityHits.length === 0) {
-        say("*This smells like proxy drift. Shiny, not necessarily correct.*");
+        say("*This smells like proxy drift. Shiny, not necessarily correct.*", "failed");
       } else if (proxyHits.length > 0 && integrityHits.length > 0) {
         say("*Warm, but watched. You named the shiny thing and the structure.*");
       } else if (integrityHits.length > 0) {
@@ -444,14 +483,14 @@
     function keepEmber() {
       const text = getInputText();
       if (!text) {
-        say("*No ember to hoard. Tragic.*");
+        say("*No ember to hoard. Tragic.*", "waiting");
         return;
       }
 
       const saved = setHoard([makeEmberRecord(text), ...hoardedEmbers]);
       input.value = "";
       if (saved) {
-        say("*Kept. Small flame added to the local hoard.*");
+        say("*Kept. Small flame added to the local hoard.*", "waving");
       }
     }
 
@@ -490,7 +529,7 @@
 
       input.value = preset;
       input.focus();
-      say("*Preset loaded. Ember is sniffing the edges.*");
+      say("*Preset loaded. Ember is sniffing the edges.*", "waiting");
     }
 
     document.querySelectorAll("[data-preset]").forEach(button => {
@@ -501,9 +540,10 @@
     document.getElementById("keepButton").addEventListener("click", keepEmber);
     document.getElementById("exportButton").addEventListener("click", exportHoard);
     document.getElementById("clearButton").addEventListener("click", clearHoard);
-    document.getElementById("dragon").addEventListener("click", () => {
-      say(passiveLines[Math.floor(Math.random() * passiveLines.length)]);
+    dragon.addEventListener("click", () => {
+      say(passiveLines[Math.floor(Math.random() * passiveLines.length)], "waving");
     });
+    setDragonState("idle");
     loadHoard();
   </script>
 </body>
